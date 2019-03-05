@@ -19,12 +19,9 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		// Getting the Sheet at index zero
 		Sheet sheet = workbook.getSheetAt(0);
 
-		// Create a DataFormatter to format and get each cell's value as String
 		DataFormatter dataFormatter = new DataFormatter();
-		System.out.println("\n\nIterating over Rows and Columns using Java 8 forEach with lambda\n");
 		sheet.forEach(row -> {
 			row.forEach(cell -> {
 				String cellValue = dataFormatter.formatCellValue(cell);

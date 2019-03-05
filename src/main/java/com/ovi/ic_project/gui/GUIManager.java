@@ -2,6 +2,7 @@ package com.ovi.ic_project.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -18,6 +19,7 @@ import com.ovi.ic_project.utils.CONSTANTS;
 
 public class GUIManager {
 
+	private static GUIManager instance;
 	private Display display;
 	private Shell shell;
 	private List<CustomComposite> pages = new ArrayList<>();
@@ -25,9 +27,16 @@ public class GUIManager {
 	private StackLayout layout;
 	private Button nextButton;
 
-	public GUIManager() {
+	private GUIManager() {
 		this.display = new Display();
 		this.shell = new Shell(display, SWT.ALT | SWT.MAX | SWT.MIN | SWT.CLOSE);
+	}
+
+	public static GUIManager getInstance() {
+		if (Objects.isNull(instance)) {
+			instance = new GUIManager();
+		}
+		return instance;
 	}
 
 	public void run() {
@@ -70,10 +79,16 @@ public class GUIManager {
 		pages.add(welcomePage);
 		pages.add(mapPage);
 
+		addContentInPages();
+
 		addWizardBehaviour();
 
 		changeToPage(welcomePage);
 
+	}
+
+	private void addContentInPages() {
+		pages.forEach(page -> page.createContent());
 	}
 
 	private void addWizardBehaviour() {

@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class App {
 	public static void main(String[] args) {
-		ApplicationSession.run();
+		ApplicationSession.getInstance().run();
 	}
 
 	private static void run() {

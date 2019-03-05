@@ -6,7 +6,6 @@ public abstract class CustomComposite extends Composite {
 
 	public CustomComposite(Composite parent, int style) {
 		super(parent, style);
-		createContent();
 	}
 
 	public abstract void createContent();
