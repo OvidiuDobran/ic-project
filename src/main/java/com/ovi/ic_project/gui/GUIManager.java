@@ -32,7 +32,7 @@ public class GUIManager {
 
 	public void run() {
 		shell.open();
-
+		shell.setMaximized(true);
 		initializeContent();
 
 		while (!shell.isDisposed()) {
