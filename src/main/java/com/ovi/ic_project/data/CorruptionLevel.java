@@ -1,9 +1,8 @@
 package com.ovi.ic_project.data;
 
 public enum CorruptionLevel {
-	
-	LOW("yellow.png"), MEDIUM("orange.png"), HIGH("red.png");
-	
+
+	LOW("yellow.png"), MEDIUM("orange.png"), HIGH("red.png"), ZERO("green.png");
 
 	private String image;
 

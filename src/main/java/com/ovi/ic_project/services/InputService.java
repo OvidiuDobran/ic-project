@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import com.ovi.ic_project.data.City;
+import com.ovi.ic_project.data.County;
 import com.ovi.ic_project.data.CorruptionLevel;
 import com.ovi.ic_project.data.Offence;
 import com.ovi.ic_project.data.Party;
@@ -22,7 +23,7 @@ import com.ovi.ic_project.data.Politician;
 
 public class InputService {
 	private static InputService instance;
-	private List<City> cities = new ArrayList<City>();
+	private List<County> cities = new ArrayList<County>();
 	private List<Politician> politicians = new ArrayList<Politician>();
 	private List<Offence> offences = new ArrayList<Offence>();
 	private List<Party> parties = new ArrayList<Party>();
@@ -55,9 +56,9 @@ public class InputService {
 			String countyName = row.getCell(1).getStringCellValue();
 			Double latitude = row.getCell(2).getNumericCellValue();
 			Double longitude = row.getCell(3).getNumericCellValue();
-			City city = new City(cityName, countyName, longitude, latitude);
-			getCities().add(city);
-			System.out.println(city);
+			County county = new County(cityName, countyName, longitude, latitude);
+			getCities().add(county);
+			System.out.println(county);
 		});
 
 		// Closing the workbook
@@ -109,13 +110,19 @@ public class InputService {
 				file.getOffences().add(offence);
 			});
 
-			Optional<City> findFirst = cities.stream().filter(c -> {
-				return (c.getName().equals(cityName) && c.getCountyName().equals(countyName));
+			Optional<County> findFirst = cities.stream().filter(c -> {
+				return (c.getCountyName().equals(countyName));
 			}).findFirst();
-			City city = findFirst.get();
-			file.setCity(city);
-			city.getFiles().add(file);
-			files.add(file);
+			County city = null;
+			try {
+				city = findFirst.get();
+				file.setCounty(city);
+				file.setCityName(cityName);
+				city.getFiles().add(file);
+				files.add(file);
+			} catch (NoSuchElementException e) {
+				System.err.println(countyName);
+			}
 		});
 
 		// Closing the workbook
@@ -128,8 +135,11 @@ public class InputService {
 
 	}
 
-	public CorruptionLevel getCorruptionLevel(City city) {
+	public CorruptionLevel getCorruptionLevel(County city) {
 		int offencesCounter = city.getFiles().stream().mapToInt(file -> file.getOffences().size()).sum();
+		if (offencesCounter == 0) {
+			return CorruptionLevel.ZERO;
+		}
 		if (offencesCounter < 3)
 			return CorruptionLevel.LOW;
 		if (offencesCounter >= 5)
@@ -138,11 +148,11 @@ public class InputService {
 
 	}
 
-	public List<City> getCities() {
+	public List<County> getCities() {
 		return cities;
 	}
 
-	public void setCities(List<City> cities) {
+	public void setCities(List<County> cities) {
 		this.cities = cities;
 	}
 

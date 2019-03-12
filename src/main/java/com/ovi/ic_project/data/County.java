@@ -3,31 +3,31 @@ package com.ovi.ic_project.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class City {
-	private String name;
+public class County {
+	private String capitalName;
 	private String countyName;
 	private List<File> files = new ArrayList<File>();
 	private Double longitude;
 	private Double latitude;
 
-	public City() {
+	public County() {
 		super();
 	}
 
-	public City(String name, String countyName, Double longitude, Double latitude) {
+	public County(String name, String countyName, Double longitude, Double latitude) {
 		super();
-		this.name = name;
+		this.capitalName = name;
 		this.countyName = countyName;
 		this.longitude = longitude;
 		this.latitude = latitude;
 	}
 
 	public String getName() {
-		return name;
+		return capitalName;
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.capitalName = name;
 	}
 
 	public String getCountyName() {
@@ -64,7 +64,7 @@ public class City {
 
 	@Override
 	public String toString() {
-		return "City [name=" + name + ", countyName=" + countyName + ", longitude=" + longitude + ", latitude="
+		return "City [name=" + capitalName + ", countyName=" + countyName + ", longitude=" + longitude + ", latitude="
 				+ latitude + "]";
 	}
 
@@ -73,7 +73,7 @@ public class City {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((countyName == null) ? 0 : countyName.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((capitalName == null) ? 0 : capitalName.hashCode());
 		return result;
 	}
 
@@ -85,16 +85,16 @@ public class City {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		City other = (City) obj;
+		County other = (County) obj;
 		if (countyName == null) {
 			if (other.countyName != null)
 				return false;
 		} else if (!countyName.equals(other.countyName))
 			return false;
-		if (name == null) {
-			if (other.name != null)
+		if (capitalName == null) {
+			if (other.capitalName != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!capitalName.equals(other.capitalName))
 			return false;
 		return true;
 	}

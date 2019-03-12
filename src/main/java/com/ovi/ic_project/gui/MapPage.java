@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-import com.ovi.ic_project.data.City;
+import com.ovi.ic_project.data.County;
 import com.ovi.ic_project.data.File;
 import com.ovi.ic_project.data.Offence;
 import com.ovi.ic_project.services.InputService;
@@ -36,10 +36,10 @@ public class MapPage extends CustomComposite {
 
 	private InputService inputService;
 	private Composite map;
-	private Map<City, Button> markers = new HashedMap<City, Button>();
+	private Map<County, Button> markers = new HashedMap<County, Button>();
 	private Table filesTable;
 	private Composite detailsSection;
-	private City selectedCity;
+	private County selectedCity;
 	private Text cityText;
 	private Text politicianText;
 	private Text partyText;
@@ -170,11 +170,11 @@ public class MapPage extends CustomComposite {
 		addEventListeners();
 	}
 
-	private void loadTableWithData(City city) {
+	private void loadTableWithData(County city) {
 		filesTable.removeAll();
 		city.getFiles().forEach(file -> {
 			TableItem item = new TableItem(filesTable, SWT.NONE);
-			item.setText(0, city.getName());
+			item.setText(0, file.getCityName());
 			item.setText(1, file.getPolitician().getName());
 			item.setText(2, file.getYear() + "");
 			item.setText(3, file.getParty().getName());
@@ -188,7 +188,7 @@ public class MapPage extends CustomComposite {
 			});
 			button.addListener(SWT.Selection, event -> {
 				InputService.getInstance().getFiles().forEach(file -> {
-					if (file.getCity().equals(city)) {
+					if (file.getCounty().equals(city)) {
 						loadTableWithData(city);
 						selectedCity = city;
 						System.err.println(file.getPolitician().getName());
@@ -204,7 +204,7 @@ public class MapPage extends CustomComposite {
 	}
 
 	private void loadDetailsSectionWithData(File currentFile) {
-		cityText.setText(currentFile.getCity().getName() + ", " + currentFile.getCity().getCountyName());
+		cityText.setText(currentFile.getCityName() + ", " + currentFile.getCounty().getCountyName());
 		politicianText.setText(currentFile.getPolitician().getName());
 		partyText.setText(currentFile.getParty().getName());
 		yearText.setText(currentFile.getYear().toString());
@@ -213,11 +213,11 @@ public class MapPage extends CustomComposite {
 		offencesText.setText(offencesString);
 	}
 
-	private void loadMapWithData(List<City> cities) {
+	private void loadMapWithData(List<County> cities) {
 		cities.forEach(city -> createButtonForCity(city));
 	}
 
-	private Button createButtonForCity(City city) {
+	private Button createButtonForCity(County city) {
 		Button button = new Button(map, SWT.NONE);
 		button.setText("");
 		String imagePath = inputService.getCorruptionLevel(city).getImagePath();

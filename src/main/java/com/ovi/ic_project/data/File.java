@@ -8,7 +8,8 @@ public class File {
 	private Party party;
 	private Integer year;
 	private List<Offence> offences = new ArrayList<Offence>();
-	private City city;
+	private County county;
+	private String cityName;
 
 	public File(Politician politician, Party party, Integer year) {
 		super();
@@ -52,12 +53,20 @@ public class File {
 		this.offences = offences;
 	}
 
-	public City getCity() {
-		return city;
+	public County getCounty() {
+		return county;
 	}
 
-	public void setCity(City city) {
-		this.city = city;
+	public void setCounty(County city) {
+		this.county = city;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
 	}
 
 }
