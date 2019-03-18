@@ -5,13 +5,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HostnameVerifier;
 
 import org.apache.commons.collections4.map.HashedMap;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FormAttachment;
@@ -37,6 +41,7 @@ public class MapPage extends CustomComposite {
 	private InputService inputService;
 	private Composite map;
 	private Map<County, Button> markers = new HashedMap<County, Button>();
+	private Map<County, Button> scoreMarkers = new HashedMap<County, Button>();
 	private Table filesTable;
 	private Composite detailsSection;
 	private County selectedCity;
@@ -45,6 +50,8 @@ public class MapPage extends CustomComposite {
 	private Text partyText;
 	private Text yearText;
 	private Text offencesText;
+	private Text currentScoreText;
+	private Text currentCountyText;
 
 	public MapPage(Composite parent, int style) {
 		super(parent, style);
@@ -93,6 +100,7 @@ public class MapPage extends CustomComposite {
 		detailsSectionData.bottom = new FormAttachment(100, -49);
 		detailsSectionData.left = new FormAttachment(map, 10);
 		detailsSectionData.right = new FormAttachment(100, -10);
+		detailsSectionData.bottom = new FormAttachment(100, -131);
 		detailsSection.setLayoutData(detailsSectionData);
 
 		Label cityLabel = new Label(detailsSection, SWT.NONE);
@@ -166,12 +174,29 @@ public class MapPage extends CustomComposite {
 		offencesTextData.bottom = new FormAttachment(100, -10);
 		offencesText.setLayoutData(offencesTextData);
 
+		currentCountyText = new Text(this, SWT.BOLD | SWT.READ_ONLY);
+		FormData currentCityTextData = new FormData();
+		currentCityTextData.top = new FormAttachment(map, 10);
+		currentCityTextData.left = new FormAttachment(0, 10);
+		currentCityTextData.width = 300;
+		currentCityTextData.height = 50;
+		currentCountyText.setLayoutData(currentCityTextData);
+
+		currentScoreText = new Text(this, SWT.BOLD | SWT.READ_ONLY);
+		FormData currentScoreTextData = new FormData();
+		currentScoreTextData.top = new FormAttachment(map, 10);
+		currentScoreTextData.left = new FormAttachment(currentCountyText, 10);
+		currentScoreTextData.width = 300;
+		currentScoreTextData.height = 50;
+		currentScoreText.setLayoutData(currentScoreTextData);
+
 		loadMapWithData(inputService.getCities());
 		addEventListeners();
 	}
 
 	private void loadTableWithData(County city) {
 		filesTable.removeAll();
+		System.err.println(city.getCountyName());
 		city.getFiles().forEach(file -> {
 			TableItem item = new TableItem(filesTable, SWT.NONE);
 			item.setText(0, file.getCityName());
@@ -182,25 +207,45 @@ public class MapPage extends CustomComposite {
 	}
 
 	private void addEventListeners() {
-		markers.forEach((city, button) -> {
-			button.addListener(SWT.MouseHover, event -> {
-				button.setToolTipText(city.getName() + ", " + city.getCountyName());
-			});
-			button.addListener(SWT.Selection, event -> {
-				InputService.getInstance().getFiles().forEach(file -> {
-					if (file.getCounty().equals(city)) {
-						loadTableWithData(city);
-						selectedCity = city;
-						System.err.println(file.getPolitician().getName());
-					}
-				});
-			});
-		});
+		markers.forEach(addCityButtonListener());
+		scoreMarkers.forEach(addCityButtonListener());
 
 		filesTable.addListener(SWT.Selection, event -> {
 			File currentFile = selectedCity.getFiles().get(filesTable.getSelectionIndex());
 			loadDetailsSectionWithData(currentFile);
 		});
+	}
+
+	private BiConsumer<? super County, ? super Button> addCityButtonListener() {
+		return (city, button) -> {
+			button.addListener(SWT.MouseHover, event -> {
+				button.setToolTipText(city.getName() + ", " + city.getCountyName());
+			});
+			button.addListener(SWT.Selection, event -> {
+				InputService.getInstance().getCities().forEach(c -> {
+					if (c.equals(city)) {
+						loadTableWithData(city);
+						currentCountyText.setText("Judet: " + city.getCountyName());
+						currentScoreText.setText(
+								"Investitii: " + new Double(city.getScore() / 1000.0).toString() + " mld. lei");
+						setFontSize(currentCountyText, 15);
+						setFontSize(currentScoreText, 15);
+
+						selectedCity = city;
+					}
+				});
+			});
+		};
+	}
+
+	private void setFontSize(Text text, int j) {
+		Font initialFont = text.getFont();
+		FontData[] fontData = initialFont.getFontData();
+		for (int i = 0; i < fontData.length; i++) {
+			fontData[i].setHeight(j);
+		}
+		Font newFont = new Font(Display.getCurrent(), fontData);
+		text.setFont(newFont);
 	}
 
 	private void loadDetailsSectionWithData(File currentFile) {
@@ -214,23 +259,36 @@ public class MapPage extends CustomComposite {
 	}
 
 	private void loadMapWithData(List<County> cities) {
-		cities.forEach(city -> createButtonForCity(city));
+		cities.forEach(city -> createButtonsForCity(city));
 	}
 
-	private Button createButtonForCity(County city) {
-		Button button = new Button(map, SWT.NONE);
-		button.setText("");
+	private Button createButtonsForCity(County city) {
+		Button coruptionButton = new Button(map, SWT.BORDER);
+		coruptionButton.setText("");
 		String imagePath = inputService.getCorruptionLevel(city).getImagePath();
 		Image buttonImage = new Image(Display.getCurrent(), imagePath);
-		button.setImage(buttonImage);
-		FormData labelTextData = new FormData();
-		labelTextData.bottom = new FormAttachment(100 - Utils.getVirtualLatitudeOf(city.getLatitude()), 0);
-		labelTextData.left = new FormAttachment(Utils.getVirtualLongitudeOf(city.getLongitude()), 0);
-		labelTextData.height = 15;
-		labelTextData.width = 15;
-		button.setLayoutData(labelTextData);
-		markers.put(city, button);
-		return button;
+		coruptionButton.setImage(buttonImage);
+		FormData coruptionButtonData = new FormData();
+		coruptionButtonData.bottom = new FormAttachment(100 - Utils.getVirtualLatitudeOf(city.getLatitude()), 0);
+		coruptionButtonData.left = new FormAttachment(Utils.getVirtualLongitudeOf(city.getLongitude()), 0);
+		coruptionButtonData.height = 15;
+		coruptionButtonData.width = 15;
+		coruptionButton.setLayoutData(coruptionButtonData);
+		markers.put(city, coruptionButton);
+
+		Button scoreButton = new Button(map, SWT.BORDER);
+		scoreButton.setText("");
+		String imagePathScore = inputService.getScoreLevel(city).getImagePath();
+		Image scoreButtonImage = new Image(Display.getCurrent(), imagePathScore);
+		scoreButton.setImage(scoreButtonImage);
+		FormData scoreButtonData = new FormData();
+		scoreButtonData.bottom = new FormAttachment(100 - Utils.getVirtualLatitudeOf(city.getLatitude()), 0);
+		scoreButtonData.left = new FormAttachment(coruptionButton, 0);
+		scoreButtonData.height = 15;
+		scoreButtonData.width = 15;
+		scoreButton.setLayoutData(scoreButtonData);
+		scoreMarkers.put(city, scoreButton);
+		return coruptionButton;
 	}
 
 }

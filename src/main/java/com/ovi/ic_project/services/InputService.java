@@ -20,6 +20,7 @@ import com.ovi.ic_project.data.CorruptionLevel;
 import com.ovi.ic_project.data.Offence;
 import com.ovi.ic_project.data.Party;
 import com.ovi.ic_project.data.Politician;
+import com.ovi.ic_project.data.ScoreLevel;
 
 public class InputService {
 	private static InputService instance;
@@ -56,7 +57,8 @@ public class InputService {
 			String countyName = row.getCell(1).getStringCellValue();
 			Double latitude = row.getCell(2).getNumericCellValue();
 			Double longitude = row.getCell(3).getNumericCellValue();
-			County county = new County(cityName, countyName, longitude, latitude);
+			Integer score = (int) row.getCell(4).getNumericCellValue();
+			County county = new County(cityName, countyName, longitude, latitude, score);
 			getCities().add(county);
 			System.out.println(county);
 		});
@@ -145,7 +147,18 @@ public class InputService {
 		if (offencesCounter >= 5)
 			return CorruptionLevel.HIGH;
 		return CorruptionLevel.MEDIUM;
-
+	}
+	
+	public ScoreLevel getScoreLevel(County city) {
+		int score=city.getScore();
+		if (score >2000) {
+			return ScoreLevel.BEST;
+		}
+		if (score >1000)
+			return ScoreLevel.HIGH;
+		if (score > 300)
+			return ScoreLevel.MEDIUM;
+		return ScoreLevel.LOW;
 	}
 
 	public List<County> getCities() {

@@ -9,17 +9,19 @@ public class County {
 	private List<File> files = new ArrayList<File>();
 	private Double longitude;
 	private Double latitude;
+	private Integer score;
 
 	public County() {
 		super();
 	}
 
-	public County(String name, String countyName, Double longitude, Double latitude) {
+	public County(String name, String countyName, Double longitude, Double latitude, Integer score) {
 		super();
 		this.capitalName = name;
 		this.countyName = countyName;
 		this.longitude = longitude;
 		this.latitude = latitude;
+		this.setScore(score);
 	}
 
 	public String getName() {
@@ -64,8 +66,8 @@ public class County {
 
 	@Override
 	public String toString() {
-		return "City [name=" + capitalName + ", countyName=" + countyName + ", longitude=" + longitude + ", latitude="
-				+ latitude + "]";
+		return "County [capitalName=" + capitalName + ", countyName=" + countyName + ", files=" + files + ", longitude="
+				+ longitude + ", latitude=" + latitude + ", score=" + score + "]";
 	}
 
 	@Override
@@ -97,6 +99,14 @@ public class County {
 		} else if (!capitalName.equals(other.capitalName))
 			return false;
 		return true;
+	}
+
+	public Integer getScore() {
+		return score;
+	}
+
+	public void setScore(Integer score) {
+		this.score = score;
 	}
 
 }

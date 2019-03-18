@@ -62,39 +62,20 @@ public class GUIManager {
 		contentPanelData.top = new FormAttachment(0, 0);
 		contentPanelData.right = new FormAttachment(100, 0);
 		contentPanelData.left = new FormAttachment(0, 0);
-		contentPanelData.bottom = new FormAttachment(100, -80);
+		contentPanelData.bottom = new FormAttachment(100, 0);
 		contentPanel.setLayoutData(contentPanelData);
 
-		nextButton = new Button(shell, SWT.NONE);
-		nextButton.setText("Next");
-		FormData nextButtonData = new FormData();
-		nextButtonData.right = new FormAttachment(100, -20);
-		nextButtonData.bottom = new FormAttachment(100, -20);
-		nextButtonData.height = CONSTANTS.BUTTON_HEIGHT;
-		nextButtonData.width = CONSTANTS.BUTTON_WIDTH;
-		nextButton.setLayoutData(nextButtonData);
-
-		CustomComposite welcomePage = new WelcomePage(contentPanel, SWT.NONE);
 		CustomComposite mapPage = new MapPage(contentPanel, SWT.NONE);
-		pages.add(welcomePage);
 		pages.add(mapPage);
 
 		addContentInPages();
 
-		addWizardBehaviour();
-
-		changeToPage(welcomePage);
+		changeToPage(mapPage);
 
 	}
 
 	private void addContentInPages() {
 		pages.forEach(page -> page.createContent());
-	}
-
-	private void addWizardBehaviour() {
-		nextButton.addListener(SWT.Selection, event -> {
-			changeToNextPage();
-		});
 	}
 
 	private void changeToNextPage() {
