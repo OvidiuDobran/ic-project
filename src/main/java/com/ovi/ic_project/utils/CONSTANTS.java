@@ -9,4 +9,10 @@ public final class CONSTANTS {
 
 	public static final double minLatitude = 43.390522;
 	public static final double maxLatitude = 48.485250;
+	public static final int ZERO_CORRUPTION_LEVEL = 0;
+	public static final int MEDIUM_CORRUPTION_LEVEL = 3;
+	public static final int HIGH_CORRUPTION_LEVEL = 5;
+	public static final int BEST_SCORE = 2000;
+	public static final int HIGH_SCORE = 1000;
+	public static final int MEDIUM_SCORE = 0;
 }

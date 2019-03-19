@@ -21,6 +21,7 @@ import com.ovi.ic_project.data.Offence;
 import com.ovi.ic_project.data.Party;
 import com.ovi.ic_project.data.Politician;
 import com.ovi.ic_project.data.ScoreLevel;
+import com.ovi.ic_project.utils.CONSTANTS;
 
 public class InputService {
 	private static InputService instance;
@@ -45,7 +46,7 @@ public class InputService {
 
 		Workbook workbook = null;
 		try {
-			workbook = WorkbookFactory.create(new File("Cities.xls"));
+			workbook = WorkbookFactory.create(new File("Counties.xls"));
 		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
 			e.printStackTrace();
 		}
@@ -139,24 +140,24 @@ public class InputService {
 
 	public CorruptionLevel getCorruptionLevel(County city) {
 		int offencesCounter = city.getFiles().stream().mapToInt(file -> file.getOffences().size()).sum();
-		if (offencesCounter == 0) {
+		if (offencesCounter == CONSTANTS.ZERO_CORRUPTION_LEVEL) {
 			return CorruptionLevel.ZERO;
 		}
-		if (offencesCounter < 3)
+		if (offencesCounter < CONSTANTS.MEDIUM_CORRUPTION_LEVEL)
 			return CorruptionLevel.LOW;
-		if (offencesCounter >= 5)
+		if (offencesCounter >= CONSTANTS.HIGH_CORRUPTION_LEVEL)
 			return CorruptionLevel.HIGH;
 		return CorruptionLevel.MEDIUM;
 	}
 	
 	public ScoreLevel getScoreLevel(County city) {
 		int score=city.getScore();
-		if (score >2000) {
+		if (score >CONSTANTS.BEST_SCORE) {
 			return ScoreLevel.BEST;
 		}
-		if (score >1000)
+		if (score >CONSTANTS.HIGH_SCORE)
 			return ScoreLevel.HIGH;
-		if (score > 300)
+		if (score > CONSTANTS.MEDIUM_SCORE)
 			return ScoreLevel.MEDIUM;
 		return ScoreLevel.LOW;
 	}
