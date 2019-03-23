@@ -109,4 +109,8 @@ public class County {
 		this.score = score;
 	}
 
+	public int getNoOfOffences() {
+		return this.getFiles().stream().mapToInt(file -> file.getOffences().size()).sum();
+	}
+
 }

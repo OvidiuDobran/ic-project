@@ -263,29 +263,47 @@ public class MapPage extends CustomComposite {
 	}
 
 	private Button createButtonsForCity(County city) {
-		Button coruptionButton = new Button(map, SWT.BORDER);
+		Composite cityComposite = new Composite(map, SWT.BORDER);
+		cityComposite.setLayout(new FormLayout());
+		FormData cityCompositeData = new FormData();
+		cityCompositeData.bottom = new FormAttachment(100 - Utils.getVirtualLatitudeOf(city.getLatitude()), 0);
+		cityCompositeData.left = new FormAttachment(Utils.getVirtualLongitudeOf(city.getLongitude()), 0);
+		cityCompositeData.width = 37;
+		cityCompositeData.height = 37;
+		cityComposite.setLayoutData(cityCompositeData);
+
+		Text totalScoreText = new Text(cityComposite, SWT.READ_ONLY);
+		String totalScore = inputService.getTotalScores().get(city).toString();
+		totalScoreText.setText(totalScore);
+		setFontSize(totalScoreText, 8);
+		FormData totalScoreData = new FormData();
+		totalScoreData.top = new FormAttachment(0, 0);
+		totalScoreData.left = new FormAttachment(0, 0);
+		totalScoreText.setLayoutData(totalScoreData);
+
+		Button coruptionButton = new Button(cityComposite, SWT.BORDER);
 		coruptionButton.setText("");
 		String imagePath = inputService.getCorruptionLevel(city).getImagePath();
 		Image buttonImage = new Image(Display.getCurrent(), imagePath);
 		coruptionButton.setImage(buttonImage);
 		FormData coruptionButtonData = new FormData();
-		coruptionButtonData.bottom = new FormAttachment(100 - Utils.getVirtualLatitudeOf(city.getLatitude()), 0);
-		coruptionButtonData.left = new FormAttachment(Utils.getVirtualLongitudeOf(city.getLongitude()), 0);
-		coruptionButtonData.height = 15;
-		coruptionButtonData.width = 15;
+		coruptionButtonData.bottom = new FormAttachment(100, 0);
+		coruptionButtonData.left = new FormAttachment(0, 0);
+		coruptionButtonData.height = 10;
+		coruptionButtonData.width = 14;
 		coruptionButton.setLayoutData(coruptionButtonData);
 		markers.put(city, coruptionButton);
 
-		Button scoreButton = new Button(map, SWT.BORDER);
+		Button scoreButton = new Button(cityComposite, SWT.BORDER);
 		scoreButton.setText("");
 		String imagePathScore = inputService.getScoreLevel(city).getImagePath();
 		Image scoreButtonImage = new Image(Display.getCurrent(), imagePathScore);
 		scoreButton.setImage(scoreButtonImage);
 		FormData scoreButtonData = new FormData();
-		scoreButtonData.bottom = new FormAttachment(100 - Utils.getVirtualLatitudeOf(city.getLatitude()), 0);
+		scoreButtonData.bottom = new FormAttachment(100, 0);
 		scoreButtonData.left = new FormAttachment(coruptionButton, 0);
-		scoreButtonData.height = 15;
-		scoreButtonData.width = 15;
+		scoreButtonData.height = 10;
+		scoreButtonData.width = 14;
 		scoreButton.setLayoutData(scoreButtonData);
 		scoreMarkers.put(city, scoreButton);
 		return coruptionButton;

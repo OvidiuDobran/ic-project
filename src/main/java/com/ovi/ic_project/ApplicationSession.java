@@ -26,6 +26,8 @@ public class ApplicationSession {
 	public void run() {
 		this.inputService.readCitiesFromExcel();
 		this.inputService.readFilesFromExcel();
+		this.inputService.calculateTotalScores();
+		this.inputService.writeToExcelStat();
 		this.guiManager.run();
 	}
 
